@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html lang="en">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <!--<script src="https://unpkg.com/vue/dist/vue.js"></script>-->
+        <script src="js/vue.js" type="text/javascript"></script>  
+        <!--<script src="js/vue-resource.min.js" type="text/javascript"></script>-->
+        <script src="js/vue-resource.js" type="text/javascript"></script>
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.0.3/vue-resource.min.js"></script>-->
+        <style>
+            #app-7{
+                display: block;
+                float: left;
+                position: relative;
+                width: 50%;
+            }
+
+            #app-7 span{
+                display: block;
+                /*float: left;*/
+                position: relative;
+                width: 100%;
+            }
+            .deleteuser{
+                display: none;
+            }
+            
+            ul li:hover .deleteuser{
+                display:block;
+            }
+        </style>
+    </head>
+    <body>
+        <!--        <div>TODO write content</div>
+                <div id="app">
+                    {{ message }}
+                </div>
+                <div id="app-2">
+                    <span v-bind:title="message">
+                        Hover your mouse over me for a few seconds to see my dynamically bound title!
+                    </span>
+                </div>
+                <div id="app-3">
+                    <p v-if="seen">Now you see me</p>
+                </div>
+                <div id="app-4">
+                    <ol>
+                        <li v-for="todo in todos">
+                            {{ todo.text }}
+                        </li>
+                    </ol>
+                </div>
+                <div id="app-5">
+                    <p>{{ message }}</p>
+                    <button v-on:click="reverseMessage">Reverse Message</button>
+                </div>
+                <div id="app-6">
+                    <p>{{ message }}</p>
+                    <input v-model="message">
+                </div>
+                <ol>
+                     Create an instance of the todo-item component 
+                    <todo-item></todo-item>
+                </ol>   -->
+        <div class="container">
+
+            <div class="starter-template">
+                <div id="app-7">
+
+
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <div  v-if="createFlag">
+                                <input type="text" class="form-control" v-model:value="username"/>
+                                <button v-on:click="createUser" class="btn btn-primary"> Create</button>
+                            </div>
+                            <button v-on:click="addUser" class="btn btn-primary" style="right: 0; left: 90%; position:relative"> {{buttontext}}</button>
+                        </li>
+                        <!-- Now we provide each todo-item with the todo object    -->
+                        <!-- it's representing, so that its content can be dynamic -->
+                        <!--<todo-item v-for="item in groceryList" v-bind:todo="item"></todo-item>-->
+                        <todo-item2 v-for="item in users" v-bind:todo="item" ></todo-item2>
+                        <todo-item v-for="item in groceryList" v-bind:todo="item"></todo-item>
+                        <todo-item1 v-for="item in user" v-bind:todo="item" ></todo-item1>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <script>
+            "use strict";
+            Vue.config.devtools = true;
+            Vue.http.options.emulateJSON = true;
+            Vue.http.options.emulateHTTP = true;
+//var app = new Vue({
+//    el: '#app',
+//    data: {
+//        message: 'Hello Vue!'
+//    }
+//});
+//var app2 = new Vue({
+//    el: '#app-2',
+//    data: {
+//        message: 'You loaded this page on ' + new Date()
+//    }
+//});
+//var app3 = new Vue({
+//    el: '#app-3',
+//    data: {
+//        seen: true
+//    }
+//});
+//var app4 = new Vue({
+//    el: '#app-4',
+//    data: {
+//        todos: [
+//            {text: 'Learn JavaScript'},
+//            {text: 'Learn Vue'},
+//            {text: 'Build something awesome'}
+//        ]
+//    }
+//});
+//var app5 = new Vue({
+//    el: '#app-5',
+//    data: {
+//        message: 'Hello Vue.js!'
+//    },
+//    methods: {
+//        reverseMessage: function () {
+//            this.message = this.message.split('').reverse().join('')
+//        }
+//    }
+//});
+//var app6 = new Vue({
+//    el: '#app-6',
+//    data: {
+//        message: 'Hello Vue!'
+//    }
+//});
+
+            Vue.component('todo-item2', {
+                props: ['todo'],
+                template: '<li class="list-group-item"><div v-if="agree"><input type="text" class="form-control" v-model="todo.name" v-bind:value=\'todo.name\' />  <button v-on:click="hidebutton">update</button></div>\n\
+\n\<div v-else><span v-on:click="showbutton">{{todo.name}}</span> <button v-on:click="deleteUser" class="btn btn-warning deleteuser" style="right: 0; left: 90%; position:relative"> Delete</button></div>\n\
+\n\</li>',
+                ready: function () {
+                    console.log('get');
+                    this.fetchUsers();
+                },
+                data: function () {
+                    return {
+                        agree: false,
+                        users:'',
+                    }
+                },
+                methods: {
+                    updateuser: function () {
+//                        var url = 'http://userapi.dev/normalapi/?rq=update&id=' + this.todo.id + '&name=' + this.todo.name;
+//
+//                        this.$http.get(url).then(function (data) {
+//
+//                            flag = data.body;
+//                            if (flag.flag) {
+//                                console.log("updated");
+//                            }
+//                        }, function (data, status, request) {
+//                            // error callback
+//                            console.log(data);
+//                        });
+//
+                        this.$http.post('http://userapi.dev/normalapi/', {rq: 'update', id: this.todo.id, name: this.todo.name}, '').then(function (data) {
+
+                          
+                            flag = data.body;
+                            if (flag.flag) {
+                                console.log("updated");
+                            }
+                        }, function (data, status, request) {
+                            // error callback
+                            console.log(data);
+                        });
+                    },
+                    hidebutton: function () {
+
+                        this.agree = false;
+
+                        this.updateuser();
+
+                    },
+                    showbutton: function () {
+                        console.log("working");
+
+                        this.agree = true;
+                    },
+                    deleteUser:function(){
+                        
+                        this.$http.post('http://userapi.dev/normalapi/', {rq: 'del', id: this.todo.id}).then(function (data) {
+                          var  flag = data.body;
+                            if (flag.flag) {
+                                console.log("deleted");
+                            }
+                        }, function (data, status, request) {
+                            // error callback
+                            console.log(data);
+                        });
+                        
+                        this.fetchUsers();
+                    },                    
+                  fetchUsers: function () {
+//                        console.log('get');
+                        this.$http.get('http://userapi.dev/normalapi/?rq=user').then(function (data) {
+                            // get body data
+//                            console.log(data.body);
+//                            console.log(data.status);
+//                            console.log(data);
+                            this.todo = data.body;
+                        }, function (data, status, request) {
+                            // error callback
+                            console.log(data);
+                        });
+                    },
+                }
+            });
+
+
+
+// Define a new component called todo-item
+            Vue.component('todo-item', {
+                template: '<li class="list-group-item">This is a todo</li>'
+            });
+            Vue.component('todo-item1', {
+                props: ['todo'],
+                template: '<li class="list-group-item"><div v-if="agree"><input type="text"  v-model="todo.name" v-bind:value=\'todo.name\' />  <button v-on:click="hidebutton">update</button></div>\n\
+\n\<div v-else><span v-on:click="showbutton">{{todo.name}}</span></div>\n\
+\n\</li>',
+                data: function () {
+                    return {
+                        agree: false
+                    }
+                },
+                methods: {
+                    updateuser: function () {
+//            console.log(this.this.removeAttr('readonly'));
+                        var url = 'http://userapi.dev/normalapi/?rq=update&id=' + this.todo.id + '&name=' + this.todo.name;
+//                        console.log(this.todo.id);
+                        this.$http.get(url).then(function (data) {
+                            // get body data
+//                            console.log(data.body);
+//                            console.log(data.status);
+//                            console.log(data);
+                          var  flag = data.body;
+                            if (flag.flag) {
+                                console.log("updated");
+                            }
+                        }, function (data, status, request) {
+                            // error callback
+                            console.log(data);
+                        });
+                    },
+                    hidebutton: function () {
+                        console.log("working too");
+                        this.updateuser();
+                        this.agree = false;
+                    },
+                    showbutton: function () {
+
+                        this.agree = true;
+                    },
+                },
+                computed: {
+                    status: function (x) {
+                        this.agree = x;
+                    }
+                }
+            });
+            var app7 = new Vue({
+                el: '#app-7',
+//                created: function () {
+//                    console.log("good");
+//                    this.fetchUsers();
+//                },            
+                data: {
+                    groceryList: [
+                        {text: 'Vegetables'},
+                        {text: 'Cheese'},
+                        {text: 'Whatever else humans are supposed to eat'}
+                    ],
+                    user: [
+                        {id: 1, name: 'joy'},
+                        {id: 2, name: 'roy'},
+                        {id: 3, name: 'toy'}
+                    ],
+                    users: '',
+                    createFlag: false,
+                    buttontext:'Add',
+                    username:''
+
+                },
+                methods: {
+                    fetchUsers: function () {
+//                        console.log('get');
+                        this.$http.get('http://userapi.dev/normalapi/?rq=user').then(function (data) {
+                            // get body data
+//                            console.log(data.body);
+//                            console.log(data.status);
+//                            console.log(data);
+                            this.users = data.body;
+                        }, function (data, status, request) {
+                            // error callback
+                            console.log(data);
+                        });
+                    },
+                    createUser: function () {
+
+                        this.$http.post('http://userapi.dev/normalapi/', {rq: 'create', name: this.username}, '').then(function (data) {
+                            var flag = data.body;
+                            if (flag.flag) {
+                                console.log("created");
+                            }
+                        }, function (data, status, request) {
+                            // error callback
+                            console.log(data);
+                        });
+                        this.fetchUsers();
+                    },
+                    addUser: function () {
+                        if (this.createFlag) {
+                            this.buttontext='Add';
+                            this.createFlag = false;
+                        } else {
+                            this.buttontext='Close';
+                            this.createFlag = true;
+                        }
+
+                    },
+               
+                },
+                mounted: function () {
+                    console.log('get');
+                    this.fetchUsers();
+                }
+            });
+
+
+
+        </script>
+    </body>
+</html>
